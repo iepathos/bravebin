@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	log.WithFields(log.Fields{
-		"host": "localhost",
-	}).Info("One brave binary!")
+	log.Info("bravebin is like ansible, but with Go.  Because we're using Go, instead of sending python to execute, we compile Go into binaries which we copy over to execute the commands.")
+
+	//
 }
