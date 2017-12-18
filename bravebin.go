@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	core "github.com/iepathos/bravebin/core"
 	"io/ioutil"
 	"log"
 	"os"
@@ -65,27 +66,23 @@ func GenerateGoMainPackage(imports []string, instructions []string) string {
 
 func BuildGofile(gofile string) string {
 	// go build {{ gofile }}
-	cmd := exec.Command("sh", "-c", fmt.Sprintf("go build %s", gofile))
-	_, err := cmd.Output()
+	cwd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return filepath.Base(gofile[0 : len(gofile)-3])
-}
-
-func CreateEchoInstruction(msg string) ([]string, []string) {
-	imports := []string{
-		"\"fmt\"",
+	os.Chdir(filepath.Dir(gofile))
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("go build %s", gofile))
+	_, err = cmd.Output()
+	if err != nil {
+		log.Fatal(err)
 	}
-	instructions := []string{
-		fmt.Sprintf("fmt.Printf(\"%%v\", \"%v\\n\")", msg),
-	}
-	return imports, instructions
+	os.Chdir(cwd)
+	return gofile[0 : len(gofile)-3]
 }
 
 func main() {
-	imports, instructions := CreateEchoInstruction("make devops better and braver")
-	imports2, instructions2 := CreateEchoInstruction("and another instruction!")
+	imports, instructions := core.CreateEchoInstruction("make devops better and braver")
+	imports2, instructions2 := core.CreateEchoInstruction("and another instruction!")
 	gofile := GenerateGoMainPackage(append(imports, imports2...), append(instructions, instructions2...))
 	gobin := BuildGofile(gofile)
 	fmt.Println(gobin)

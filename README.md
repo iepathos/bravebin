@@ -1,6 +1,15 @@
 # bravebin
 
-bravebin is like ansible, but with Go.  bravebin generates and compiles Go code into binaries to distribute and execute on hosts.  
+bravebin is like ansible, but with Go.  bravebin generates and compiles Go code into binaries to distribute and execute on hosts from yaml recipes.
+
+
+## Project Goals
+
+Open Source, have not chosen a license to release code under yet but will choose a common one as project develops.
+
+Compatible with existing ansible recipes by using same yaml naming for bravebin modules
+
+Compatible with Linux, OSX, and Windows
 
 
 ## Tasks
