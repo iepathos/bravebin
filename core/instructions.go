@@ -4,7 +4,11 @@ import (
 	"fmt"
 )
 
-func CreateEchoInstruction(msg string) ([]string, []string) {
+type DebugModule struct {
+	Msg string
+}
+
+func DebugMsgInstruction(msg string) ([]string, []string) {
 	imports := []string{
 		"\"fmt\"",
 	}

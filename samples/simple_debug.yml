@@ -1,0 +1,12 @@
+---
+
+
+debug: msg="wtf awesome!"
+
+
+debug:
+  msg: brave bin!! much wow
+
+
+
+invalidModule: msg="example fucked up command"
