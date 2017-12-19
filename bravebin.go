@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	core "github.com/iepathos/bravebin/core"
-	"strings"
+	"os"
 )
 
 func main() {
@@ -12,39 +12,12 @@ func main() {
 	// gofile := core.GenerateGoMainPackage(append(imports, imports2...), append(instructions, instructions2...))
 	// gobin := core.BuildGofile(gofile)
 	// fmt.Println(gobin)
-
+	filename := string(os.Args[1])
 	parser := core.BraveParser{
-		"/home/cha0s/go/src/github.com/iepathos/bravebin/samples/simple_debug.yml",
+		filename, //"/home/cha0s/go/src/github.com/iepathos/bravebin/samples/simple_debug.yml",
 		[]core.Instruction{},
 	}
-	instructions := parser.Parse()
-	fmt.Printf("%v", instructions)
-
-	goImports := []string{}
-	goInstructions := []string{}
-
-	for _, instruction := range instructions {
-		if instruction.Module == "debug" {
-			for _, arg := range instruction.Args {
-				if strings.Contains(arg, "msg") {
-					// fmt.Println(arg)
-					msgIdx := strings.Index(arg, "msg")
-					msg := ""
-					if string(arg[msgIdx+4]) == "\"" {
-						// ok, strip the quotes
-						msg = strings.Replace(string(arg[msgIdx+4:]), "\"", "", 2)
-					} else {
-						msg = string(arg[msgIdx+4:])
-					}
-					imports, instructions := core.DebugMsgInstruction(msg)
-					goImports = append(goImports, imports...)
-					goInstructions = append(goInstructions, instructions...)
-
-				}
-			}
-		}
-	}
-	// fmt.Printf("%v", goInstructions)
+	goImports, goInstructions := parser.Parse()
 	gofile := core.GenerateGoMainPackage(goImports, goInstructions)
 	gobin := core.BuildGofile(gofile)
 	fmt.Println(gobin)

@@ -18,16 +18,6 @@ func StringInSlice(a string, list []string) bool {
 	return false
 }
 
-func deleteEmpty(s []string) []string {
-	var r []string
-	for _, str := range s {
-		if str != "" {
-			r = append(r, str)
-		}
-	}
-	return r
-}
-
 type Instruction struct {
 	Module string
 	Args   []string
@@ -58,7 +48,7 @@ func (bp BraveParser) Read() []byte {
 	return data
 }
 
-func (bp BraveParser) Parse() []Instruction {
+func (bp BraveParser) Parse() ([]string, []string) {
 	data := string(bp.Read())
 	instructions := []Instruction{}
 	args := []string{}
@@ -87,5 +77,29 @@ func (bp BraveParser) Parse() []Instruction {
 
 	bp.Instructions = instructions
 	// fmt.Printf("%v", instructions)
-	return instructions
+
+	goImports := []string{}
+	goInstructions := []string{}
+
+	for _, instruction := range instructions {
+		if instruction.Module == "debug" {
+			for _, arg := range instruction.Args {
+				if strings.Contains(arg, "msg") {
+					// fmt.Println(arg)
+					msgIdx := strings.Index(arg, "msg")
+					msg := ""
+					if string(arg[msgIdx+4]) == "\"" {
+						// ok, strip the quotes
+						msg = strings.Replace(string(arg[msgIdx+4:]), "\"", "", 2)
+					} else {
+						msg = strings.TrimSpace(string(arg[msgIdx+4:]))
+					}
+					imports, instructions := DebugMsgInstruction(msg)
+					goImports = append(goImports, imports...)
+					goInstructions = append(goInstructions, instructions...)
+				}
+			}
+		}
+	}
+	return goImports, goInstructions
 }
