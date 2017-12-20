@@ -1,12 +1,17 @@
 ---
 
 
-debug: msg="wtf awesome!"
+- debug: msg="wtf awesome!"
 
 
-debug:
-  msg: brave bin!! much wow
+- debug:
+    msg: brave bin!! much wow
+
+
+- shell: echo "no fucking way"
+
+- shell: echo "hack me good"
 
 
 
-invalidModule: msg="example fucked up command"
+- invalidModule: msg="example fucked up command"

@@ -29,15 +29,10 @@ type BraveParser struct {
 }
 
 func isTopLevelInstruction(line string) bool {
-	invalidInstructionStarts := []string{
-		"-",
-		"",
+	if strings.HasPrefix(string(line), "- ") {
+		return true
 	}
-	invalidTopInstructionStarts := append(invalidInstructionStarts, " ")
-	if StringInSlice(string(line[0]), invalidTopInstructionStarts) {
-		return false
-	}
-	return true
+	return false
 }
 
 func (bp BraveParser) Read() []byte {
@@ -48,7 +43,7 @@ func (bp BraveParser) Read() []byte {
 	return data
 }
 
-func (bp BraveParser) Parse() ([]string, []string) {
+func (bp BraveParser) Parse() []Instruction {
 	data := string(bp.Read())
 	instructions := []Instruction{}
 	args := []string{}
@@ -57,7 +52,7 @@ func (bp BraveParser) Parse() ([]string, []string) {
 		if len(strings.TrimSpace(line)) > 0 {
 			if isTopLevelInstruction(line) {
 				lsplit := strings.Split(line, ":")
-				instruction := lsplit[0]
+				instruction := lsplit[0][2:]
 
 				if len(lsplit) > 0 {
 					afterColon := strings.TrimSpace(strings.Join(lsplit[1:], " "))
@@ -76,11 +71,14 @@ func (bp BraveParser) Parse() ([]string, []string) {
 	}
 
 	bp.Instructions = instructions
-	// fmt.Printf("%v", instructions)
+	return instructions
+}
 
+func (bp BraveParser) ParseInstructions(instructions []Instruction) ([]string, []string) {
 	goImports := []string{}
 	goInstructions := []string{}
 
+	firstShellCmd := true
 	for _, instruction := range instructions {
 		if instruction.Module == "debug" {
 			for _, arg := range instruction.Args {
@@ -98,6 +96,13 @@ func (bp BraveParser) Parse() ([]string, []string) {
 					goImports = append(goImports, imports...)
 					goInstructions = append(goInstructions, instructions...)
 				}
+			}
+		} else if instruction.Module == "shell" {
+			imports, instructions := ShellInstruction(instruction.Args[0], firstShellCmd)
+			goImports = append(goImports, imports...)
+			goInstructions = append(goInstructions, instructions...)
+			if firstShellCmd {
+				firstShellCmd = false
 			}
 		}
 	}

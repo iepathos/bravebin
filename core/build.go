@@ -41,7 +41,7 @@ func GenerateGoMainPackage(imports []string, instructions []string) string {
 	content := []string{
 		"package main",
 		"import (",
-		strings.Join(imports, ",\n"),
+		strings.Join(imports, "\n"),
 		")",
 		"func main() {",
 		strings.Join(instructions, "\n"),
