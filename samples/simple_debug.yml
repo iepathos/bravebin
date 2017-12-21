@@ -13,5 +13,5 @@
 - shell: echo "hack me good"
 
 
-
+- shell: cat /etc/hosts
 - invalidModule: msg="example fucked up command"
