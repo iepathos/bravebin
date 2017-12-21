@@ -14,4 +14,13 @@
 
 
 - shell: cat /etc/hosts
+
+--- should fail no root
+- shell: ls /root
+
+
+--- should work with root
+- shell: ls /root
+  sudo: yes
+
 - invalidModule: msg="example fucked up command"

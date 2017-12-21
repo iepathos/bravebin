@@ -98,7 +98,24 @@ func (bp BraveParser) ParseInstructions(instructions []Instruction) ([]string, [
 				}
 			}
 		} else if instruction.Module == "shell" {
-			imports, instructions := ShellInstruction(instruction.Args[0], firstShellCmd)
+			sudo := false
+			for _, arg := range instruction.Args {
+				sudo = false
+				if strings.Contains(arg, "sudo") {
+					if strings.Contains(arg, "=") {
+						// this is broken for multiple args on one line need smarter parsing for this case
+
+						if strings.TrimSpace(strings.Split(arg, "=")[1]) == "yes" || strings.TrimSpace(strings.Split(arg, "=")[1]) == "true" {
+							sudo = true
+						}
+					} else if strings.Contains(arg, ":") {
+						if strings.TrimSpace(strings.Split(arg, ":")[1]) == "yes" || strings.TrimSpace(strings.Split(arg, ":")[1]) == "true" {
+							sudo = true
+						}
+					}
+				}
+			}
+			imports, instructions := ShellInstruction(instruction.Args[0], sudo, firstShellCmd)
 			goImports = append(goImports, imports...)
 			goInstructions = append(goInstructions, instructions...)
 			if firstShellCmd {

@@ -20,24 +20,40 @@ func DebugMsgInstruction(msg string) ([]string, []string) {
 	return imports, instructions
 }
 
-func ShellInstruction(shellCode string, first bool) ([]string, []string) {
-	// escape double quotes in shellCode
+func ShellInstruction(shellCode string, sudo bool, first bool) ([]string, []string) {
 	shellCode = EscapeShellCode(shellCode)
 	imports := []string{
 		"\"os/exec\"",
 		"\"fmt\"",
 	}
 	instructions := []string{}
+	cmdStr := ""
 	if first {
+		if sudo {
+			cmdStr = fmt.Sprintf("cmd := exec.Command(\"/bin/sh\", \"-c\", \"sudo %v\")", shellCode)
+		} else {
+			cmdStr = fmt.Sprintf("cmd := exec.Command(\"/bin/sh\", \"-c\", \"%v\")", shellCode)
+		}
 		instructions = []string{
-			fmt.Sprintf("cmd := exec.Command(\"/bin/sh\", \"-c\", \"%v\")", shellCode),
-			fmt.Sprintf("out, _ := cmd.Output()"),
+			cmdStr,
+			fmt.Sprintf("out, err := cmd.Output()"),
+			fmt.Sprintf("if err != nil {"),
+			fmt.Sprintf("fmt.Println(err)"),
+			fmt.Sprintf("}"),
 			fmt.Sprintf("fmt.Printf(\"%%s\", out)"),
 		}
 	} else {
+		if sudo {
+			cmdStr = fmt.Sprintf("cmd = exec.Command(\"/bin/sh\", \"-c\", \"sudo %v\")", shellCode)
+		} else {
+			cmdStr = fmt.Sprintf("cmd = exec.Command(\"/bin/sh\", \"-c\", \"%v\")", shellCode)
+		}
 		instructions = []string{
-			fmt.Sprintf("cmd = exec.Command(\"/bin/sh\", \"-c\", \"%v\")", shellCode),
-			fmt.Sprintf("out, _ = cmd.Output()"),
+			cmdStr,
+			fmt.Sprintf("out, err = cmd.Output()"),
+			fmt.Sprintf("if err != nil {"),
+			fmt.Sprintf("fmt.Println(err)"),
+			fmt.Sprintf("}"),
 			fmt.Sprintf("fmt.Printf(\"%%s\", out)"),
 		}
 	}
