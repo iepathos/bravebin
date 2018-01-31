@@ -9,7 +9,7 @@ Open Source, have not chosen a license to release code under yet but will choose
 
 Compatible with existing ansible recipes by using same yaml naming for bravebin modules
 
-Compatible with Linux, OSX, and Windows
+Compatible with Linux and OSX
 
 
 ## Tasks

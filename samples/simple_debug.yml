@@ -23,4 +23,8 @@
 - shell: ls /root
   sudo: yes
 
+- shell: ls /root
+  sudo: true
+
+
 - invalidModule: msg="example fucked up command"
